@@ -62,7 +62,11 @@ fun Application.a2aModule(endpoint: String, taskManager: TaskManager, agentCard:
                     else -> null
                 }
                 if (result != null) {
-                    call.respond(HttpStatusCode.OK, result.toJson())
+                    call.respondText(
+                        result.toJson(),
+                        contentType = ContentType.Application.Json,
+                        status = HttpStatusCode.OK
+                    )
                 } else {
                     val streamingResult = when (val jsonRpcRequest = body.toJsonRpcRequest()) {
                         is SendTaskStreamingRequest -> taskManager.onSendTaskSubscribe(jsonRpcRequest)

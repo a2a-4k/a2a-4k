@@ -41,9 +41,6 @@ class A2AClient(
             contentType(ContentType.Application.Json)
             accept(ContentType.Application.Json)
         }
-        install(ContentNegotiation) {
-            json(a2aJson)
-        }
         install(SSE)
         install(HttpTimeout) {
             requestTimeoutMillis = 30000
@@ -73,7 +70,7 @@ class A2AClient(
         if (response.status != HttpStatusCode.OK) {
             throw ServerException("Failed to get agent card: ${response.status}!")
         }
-        return response.body()
+        return a2aJson.decodeFromString(response.bodyAsText())
     }
 
     /**
@@ -103,7 +100,7 @@ class A2AClient(
             throw ServerException("Failed to get task: ${response.status}")
         }
 
-        return response.body()
+        return a2aJson.decodeFromString(response.bodyAsText())
     }
 
     /**
@@ -142,7 +139,7 @@ class A2AClient(
             throw ServerException("Failed to send task: ${response.status}")
         }
 
-        return response.body()
+        return a2aJson.decodeFromString(response.bodyAsText())
     }
 
     /**
@@ -206,7 +203,7 @@ class A2AClient(
             throw Exception("Failed to cancel task: ${response.status}")
         }
 
-        return response.body()
+        return a2aJson.decodeFromString(response.bodyAsText())
     }
 
     /**
@@ -239,7 +236,7 @@ class A2AClient(
             throw Exception("Failed to set task push notification: ${response.status}")
         }
 
-        return response.body()
+        return a2aJson.decodeFromString(response.bodyAsText())
     }
 
     /**
@@ -267,7 +264,7 @@ class A2AClient(
             throw Exception("Failed to get task push notification: ${response.status}")
         }
 
-        return response.body()
+        return a2aJson.decodeFromString(response.bodyAsText())
     }
 
     /**

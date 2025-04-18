@@ -73,6 +73,7 @@ class A2AServer(
      * will not return until the server is stopped.
      */
     fun start(wait: Boolean = false) {
+        log.info("Starting server on port $port")
         server.set(
             embeddedServer(Netty, port = port, host = host) {
                 a2aModule(endpoint, taskManager, agentCard)
