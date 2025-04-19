@@ -101,7 +101,6 @@ subprojects {
     }
 
     repositories {
-        mavenLocal()
         mavenCentral()
         google()
     }
@@ -119,7 +118,6 @@ dependencies {
 }
 
 repositories {
-    mavenLocal()
     mavenCentral()
 }
 

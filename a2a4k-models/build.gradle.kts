@@ -4,10 +4,14 @@
 
 kotlin {
     jvm()
+
+    wasmJs().nodejs()
+
     sourceSets {
         val commonMain by getting {
             dependencies {
                 implementation(libs.kotlinx.serialization.json)
+                implementation(libs.kotlinx.datetime)
             }
         }
 

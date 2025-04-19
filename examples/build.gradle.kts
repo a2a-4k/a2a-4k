@@ -4,10 +4,12 @@
 
 kotlin {
     jvm()
+
+    wasmJs().nodejs()
+
     sourceSets {
         val commonMain by getting {
             dependencies {
-
                 implementation(project(":a2a4k-models"))
                 implementation(project(":a2a4k-client"))
                 implementation(project(":a2a4k-server-ktor"))

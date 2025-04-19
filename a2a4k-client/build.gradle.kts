@@ -4,17 +4,32 @@
 
 kotlin {
     jvm()
+
+    wasmJs().nodejs()
+
     sourceSets {
         val commonMain by getting {
             dependencies {
                 implementation(project(":a2a4k-models"))
                 implementation(libs.bundles.kotlinx)
                 implementation(libs.ktor.client.core)
-                implementation(libs.ktor.client.cio.jvm)
                 implementation(libs.ktor.serialization.kotlinx.json)
                 implementation(libs.ktor.client.content.negotiation)
             }
         }
+
+        val jvmMain by getting {
+            dependencies {
+                implementation(libs.ktor.client.cio)
+            }
+        }
+
+        val wasmJsMain by getting {
+            dependencies {
+                implementation(libs.ktor.client.js)
+            }
+        }
+
 
         val jvmTest by getting {
             dependencies {

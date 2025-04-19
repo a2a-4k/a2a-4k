@@ -12,6 +12,7 @@ kotlin {
                 implementation(libs.bundles.kotlinx)
                 implementation(libs.ktor.server.sse)
                 implementation(libs.slf4j.api)
+                implementation(libs.ktor.client.cio)
             }
         }
 
@@ -30,7 +31,6 @@ kotlin {
                 implementation("org.junit.jupiter:junit-jupiter-engine:5.10.2")
                 implementation("org.jetbrains.kotlin:kotlin-test:2.1.10")
                 implementation(libs.ktor.client.core)
-                implementation(libs.ktor.client.cio.jvm)
                 implementation(libs.ktor.serialization.kotlinx.json)
                 implementation(libs.ktor.client.content.negotiation)
                 implementation("io.mockk:mockk:1.13.10")

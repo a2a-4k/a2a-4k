@@ -5,7 +5,9 @@ package org.a2a4k.models
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import java.time.Instant
+
+import kotlinx.datetime.Clock
+
 
 // Marker interface for streaming task results
 @Serializable
@@ -26,7 +28,7 @@ data class Task(
 data class TaskStatus(
     val state: TaskState,
     val message: Message? = null,
-    val timestamp: String = Instant.now().toString(),
+    val timestamp: String = Clock.System.now().toString(), // TODO
 )
 
 @Serializable
