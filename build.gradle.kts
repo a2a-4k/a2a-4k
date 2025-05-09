@@ -13,7 +13,7 @@ group = "io.github.a2a-4k"
 version = project.findProperty("version") as String
 
 plugins {
-    kotlin("multiplatform") version "2.1.10" apply false
+    kotlin("multiplatform") version "2.1.20" apply false
     kotlin("plugin.serialization") version "2.1.10" apply false
     id("org.jetbrains.dokka") version "2.0.0"
     id("org.cyclonedx.bom") version "2.0.0"
