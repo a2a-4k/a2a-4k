@@ -30,6 +30,10 @@ data class Message(
     val metadata: Map<String, String> = emptyMap(),
 )
 
+fun assistantMessage(text: String, metadata: Map<String, String> = emptyMap()): Message {
+    return Message(role = "assistant", parts = listOf(TextPart(text)), metadata = metadata)
+}
+
 @OptIn(ExperimentalSerializationApi::class)
 @Serializable
 @JsonClassDiscriminator("type")

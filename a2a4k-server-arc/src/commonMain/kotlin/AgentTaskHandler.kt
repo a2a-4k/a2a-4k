@@ -4,9 +4,14 @@
 package io.github.a2a_4k.arc
 
 import io.github.a2a_4k.TaskHandler
+import io.github.a2a_4k.TaskUpdate
+import io.github.a2a_4k.emitArtifact
+import io.github.a2a_4k.emitAssistantCompleted
+import io.github.a2a_4k.emitFailed
 import io.github.a2a_4k.models.Task
 import io.github.a2a_4k.models.content
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 import org.eclipse.lmos.arc.agents.AgentProvider
 import org.eclipse.lmos.arc.agents.ConversationAgent
 import org.eclipse.lmos.arc.agents.User
@@ -23,8 +28,7 @@ import java.util.*
  */
 class AgentTaskHandler(private val agent: ConversationAgent, private val agentProvider: AgentProvider) : TaskHandler {
 
-    // TODO remove runBlocking
-    override fun handle(task: Task): Task = runBlocking {
+    override fun handle(task: Task): Flow<TaskUpdate> = flow {
         // Convert the Task to a Conversation
         val conversation = Conversation(
             conversationId = task.sessionId ?: UUID.randomUUID().toString(),
@@ -50,8 +54,13 @@ class AgentTaskHandler(private val agent: ConversationAgent, private val agentPr
 
         // Handle the result
         when (result) {
-            is Success -> task.completed(result.value.latest<AssistantMessage>()?.content ?: "")
-            else -> task.failed()
+            is Success -> {
+                val assistantMessage = result.value.latest<AssistantMessage>()?.content ?: ""
+                emitArtifact(assistantMessage)
+                emitAssistantCompleted(assistantMessage)
+            }
+
+            else -> emitFailed()
         }
     }
 }

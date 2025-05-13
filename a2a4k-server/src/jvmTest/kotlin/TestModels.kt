@@ -8,6 +8,10 @@ import io.github.a2a_4k.models.Authentication
 import io.github.a2a_4k.models.Capabilities
 import io.github.a2a_4k.models.Skill
 import io.github.a2a_4k.models.Task
+import io.github.a2a_4k.models.TaskState
+import io.github.a2a_4k.models.TaskStatus
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flowOf
 
 val capabilities = Capabilities(
     streaming = true,
@@ -42,7 +46,7 @@ val agentCard = AgentCard(
 )
 
 class NoopTaskHandler : TaskHandler {
-    override fun handle(task: Task): Task {
-        return task
+    override fun handle(task: Task): Flow<TaskUpdate> {
+        return flowOf(StatusUpdate(status = TaskStatus(TaskState.COMPLETED)))
     }
 }

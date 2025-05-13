@@ -9,6 +9,9 @@ import io.github.a2a_4k.models.Task
 import io.github.a2a_4k.models.TaskState
 import io.github.a2a_4k.models.TaskStatus
 import io.github.a2a_4k.models.TextPart
+import io.github.a2a_4k.models.assistantMessage
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.runBlocking
 
 /**
@@ -16,7 +19,7 @@ import kotlinx.coroutines.runBlocking
  */
 class BasicTaskHandler(private val completer: suspend (Message) -> String) : TaskHandler {
 
-    override fun handle(task: Task): Task {
+    override fun handle(task: Task): Flow<TaskUpdate> = flow {
         // Extract the message from the task
         val message = task.history?.last() ?: error("Message was not found!")
 
@@ -29,11 +32,9 @@ class BasicTaskHandler(private val completer: suspend (Message) -> String) : Tas
             parts = listOf(TextPart(text = response)),
         )
 
-        // Update the task status
-        val updatedStatus = TaskStatus(state = TaskState.COMPLETED)
-
         // Return the updated task
-        return task.copy(status = updatedStatus, artifacts = listOf(responseArtifact))
+        emit(ArtifactUpdate(listOf(responseArtifact)))
+        emit(StatusUpdate(TaskStatus(TaskState.COMPLETED, message = assistantMessage(response))))
     }
 }
 

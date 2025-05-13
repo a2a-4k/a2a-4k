@@ -16,7 +16,6 @@ import org.slf4j.LoggerFactory
 import java.util.*
 import java.util.Collections.synchronizedList
 import java.util.concurrent.ConcurrentHashMap
-import kotlin.time.measureTime
 
 /**
  * In-memory implementation of the TaskManager interface.
@@ -50,7 +49,7 @@ class BasicTaskManager(
             id = request.id,
             error = TaskNotFoundError(),
         )
-        val taskResult = appendTaskHistory(task, taskQueryParams.historyLength)
+        val taskResult = task.limitHistory(taskQueryParams.historyLength)
         return GetTaskResponse(id = request.id, result = taskResult)
     }
 
@@ -95,23 +94,33 @@ class BasicTaskManager(
             pushNotificationConfig?.let { notificationPublisher?.publish(task.working(), it) }
 
             // Send Task to Agent
-            val handledTask: Task
-            val duration = measureTime {
-                handledTask = taskHandler.handle(task)
-            }
-            taskStorage.store(handledTask)
+            var updatedTask: Task = task
+            taskHandler.handle(task).collect { update ->
+                when (update) {
+                    // Send task status update
+                    is ArtifactUpdate -> {
+                        updatedTask = updatedTask.addArtifacts(update.artifacts)
+                        update.artifacts.forEach { artifact ->
+                            sendSseEvent(task.id, TaskArtifactUpdateEvent(task.id, artifact = artifact))
+                        }
+                    }
 
-            // Send push notification
-            pushNotificationConfig?.let { notificationPublisher?.publish(handledTask, it) }
+                    // Send final task status update
+                    is StatusUpdate -> {
+                        updatedTask = updatedTask.updateStatus(update.status)
+                        sendSseEvent(task.id, TaskStatusUpdateEvent(task.id, update.status, update.final))
+                    }
+                }
+            }
+
+            // Send push notification after processing has completed
+            pushNotificationConfig?.let { notificationPublisher?.publish(updatedTask, it) }
+
+            // Store the task after processing has completed
+            taskStorage.store(updatedTask)
 
             // Return the task with appropriate history length
-            val taskResult = appendTaskHistory(handledTask, taskSendParams.historyLength)
-
-            val responseTime = (duration.inWholeMilliseconds.toDouble() / 1000).toString()
-            SendTaskResponse(
-                id = request.id,
-                result = taskResult.copy(metadata = taskResult.metadata + mapOf("responseTime" to responseTime))
-            )
+            SendTaskResponse(id = request.id, result = updatedTask.limitHistory(taskSendParams.historyLength))
         } catch (e: Exception) {
             log.error("Error while sending task: ${e.message}")
             SendTaskResponse(
@@ -137,33 +146,41 @@ class BasicTaskManager(
             val task = upsertTask(taskSendParams)
 
             // Set push notification if provided
-            taskSendParams.pushNotification?.let {
+            val pushNotificationConfig = taskSendParams.pushNotification?.let {
                 setPushNotificationInfo(taskSendParams.id, it)
-            }
+            } ?: taskStorage.fetchNotificationConfig(task.id)
 
             // Set up SSE consumer
             val sseEventQueue = setupSseConsumer(taskSendParams.id)
 
-            // Send initial task status update
-            val initialStatusEvent = TaskStatusUpdateEvent(id = task.id, status = task.status, final = false)
-            sendSseEvent(task.id, initialStatusEvent)
+            // Send push notification WORKING
+            pushNotificationConfig?.let { notificationPublisher?.publish(task.working(), it) }
 
             // Send Task to Agent
-            val handledTask = taskHandler.handle(task)
-            taskStorage.store(handledTask)
+            var updatedTask: Task = task
+            taskHandler.handle(task).collect { update ->
+                when (update) {
+                    // Send task status update
+                    is ArtifactUpdate -> {
+                        updatedTask = updatedTask.addArtifacts(update.artifacts)
+                        update.artifacts.forEach { artifact ->
+                            sendSseEvent(task.id, TaskArtifactUpdateEvent(task.id, artifact = artifact))
+                        }
+                    }
 
-            // Send push notification if configured
-            taskStorage.fetchNotificationConfig(task.id)?.let {
-                notificationPublisher?.publish(handledTask, it)
+                    // Send final task status update
+                    is StatusUpdate -> {
+                        updatedTask = updatedTask.updateStatus(update.status)
+                        sendSseEvent(task.id, TaskStatusUpdateEvent(task.id, update.status, update.final))
+                    }
+                }
             }
 
-            // Send task status update
-            task.artifacts?.forEach { artifact ->
-                sendSseEvent(task.id, TaskArtifactUpdateEvent(task.id, artifact = artifact))
-            }
+            // Send push notification after processing has completed
+            pushNotificationConfig?.let { notificationPublisher?.publish(updatedTask, it) }
 
-            // Send final task status update
-            sendSseEvent(task.id, TaskStatusUpdateEvent(status = task.status, id = task.id, final = true))
+            // Store the task after processing has completed
+            taskStorage.store(updatedTask)
 
             // Return the flow of events
             return dequeueEventsForSse(request.id!!, task.id, sseEventQueue)
@@ -307,22 +324,6 @@ class BasicTaskManager(
                 )
             }
         }
-    }
-
-    /**
-     * Creates a copy of the task with a limited history length.
-     *
-     * @param task The task to process
-     * @param historyLength The maximum number of history items to include, or null for no history
-     * @return A copy of the task with limited history
-     */
-    private fun appendTaskHistory(task: Task, historyLength: Int?): Task {
-        val updatedHistory = if (historyLength != null && historyLength > 0) {
-            task.history?.takeLast(historyLength)?.toMutableList() ?: emptyList()
-        } else {
-            null
-        }
-        return task.copy(history = updatedHistory)
     }
 
     /**

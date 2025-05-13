@@ -4,6 +4,8 @@
 package io.github.a2a_4k
 
 import io.github.a2a_4k.models.*
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
@@ -179,7 +181,7 @@ class A2AClientTest {
 }
 
 class NoopTaskHandler : TaskHandler {
-    override fun handle(task: Task): Task {
-        return task
+    override fun handle(task: Task): Flow<TaskUpdate> {
+        return flowOf(StatusUpdate(status = TaskStatus(TaskState.COMPLETED)))
     }
 }
