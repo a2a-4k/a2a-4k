@@ -7,6 +7,7 @@ import io.github.a2a_4k.models.PushNotificationConfig
 import io.github.a2a_4k.models.Task
 import io.github.a2a_4k.models.a2aJson
 import io.github.a2a_4k.models.toJson
+import io.github.oshai.kotlinlogging.KotlinLogging
 import io.ktor.client.*
 import io.ktor.client.engine.cio.*
 import io.ktor.client.plugins.*
@@ -15,17 +16,15 @@ import io.ktor.client.plugins.sse.*
 import io.ktor.client.request.*
 import io.ktor.http.*
 import io.ktor.serialization.kotlinx.json.*
-import kotlinx.serialization.json.Json
-import org.slf4j.LoggerFactory
+
+private val log = KotlinLogging.logger {}
+
 
 /**
  * BasicNotificationPublisher implements the NotificationPublisher interface
  * using HttpURLConnection to send notifications to the specified URL.
  */
 class BasicNotificationPublisher(httpClient: HttpClient? = null) : NotificationPublisher {
-
-    /** Logger for this class */
-    private val log = LoggerFactory.getLogger(this::class.java)
 
     /**
      * The HTTP client used for making requests to the server.

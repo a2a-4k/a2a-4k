@@ -10,6 +10,9 @@ import kotlinx.datetime.*
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
+import kotlinx.datetime.Clock
+
+
 /**
  * Marker interface for streaming task results.
  * This sealed class serves as a base for all classes that represent streaming updates for tasks.
@@ -104,7 +107,7 @@ data class Task(
 data class TaskStatus(
     val state: TaskState,
     val message: Message? = null,
-    val timestamp: String = Clock.System.now().toString(),
+    val timestamp: String = Clock.System.now().toString(), // TODO
 )
 
 /**

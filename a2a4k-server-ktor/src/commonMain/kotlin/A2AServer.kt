@@ -4,17 +4,17 @@
 package io.github.a2a_4k
 
 import io.github.a2a_4k.models.AgentCard
+import io.github.oshai.kotlinlogging.KotlinLogging
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.engine.*
-import io.ktor.server.netty.*
+//import io.ktor.server.netty.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import io.ktor.server.sse.*
 import io.ktor.sse.*
-import org.slf4j.LoggerFactory
-import java.util.concurrent.atomic.AtomicReference
+import kotlin.concurrent.atomics.AtomicReference
 
 /**
  * A2AServer implements an Agent-to-Agent communication server based on the A2A protocol.
@@ -23,6 +23,8 @@ import java.util.concurrent.atomic.AtomicReference
  * retrieval, cancellation, and notification management. It also provides an endpoint for
  * retrieving the agent's metadata (agent card).
  */
+private val log = KotlinLogging.logger {}
+
 class A2AServer(
     /**
      * The hostname or IP address the server will bind to.
@@ -54,11 +56,6 @@ class A2AServer(
      */
     private val taskManager: TaskManager,
 ) {
-    /**
-     * Logger instance for this class.
-     */
-    private val log = LoggerFactory.getLogger(A2AServer::class.java)
-
     /**
      * The server instance that will be started.
      */

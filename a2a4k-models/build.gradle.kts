@@ -4,6 +4,9 @@
 
 kotlin {
     jvm()
+
+    wasmJs().nodejs()
+
     sourceSets {
         val commonMain by getting {
             dependencies {

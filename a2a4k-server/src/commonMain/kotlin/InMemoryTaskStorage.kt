@@ -3,10 +3,10 @@
 // SPDX-License-Identifier: Apache-2.0
 package io.github.a2a_4k
 
+import co.touchlab.stately.collections.ConcurrentMutableMap
 import io.github.a2a_4k.models.PushNotificationConfig
 import io.github.a2a_4k.models.Task
 import io.github.a2a_4k.storage.TaskStorage
-import java.util.concurrent.ConcurrentHashMap
 
 /**
  * In-memory implementation of the TaskStorage interface.
@@ -16,10 +16,10 @@ import java.util.concurrent.ConcurrentHashMap
 class InMemoryTaskStorage : TaskStorage {
 
     /** Map of task IDs to their corresponding Task objects */
-    private val tasks = ConcurrentHashMap<String, Task>()
+    private val tasks = ConcurrentMutableMap<String, Task>()
 
     /** Map of task IDs to their push notification configurations */
-    private val pushNotificationInfos: MutableMap<String, PushNotificationConfig> = ConcurrentHashMap()
+    private val pushNotificationInfos: MutableMap<String, PushNotificationConfig> = ConcurrentMutableMap()
 
     /**
      * Stores a task in the in-memory storage.

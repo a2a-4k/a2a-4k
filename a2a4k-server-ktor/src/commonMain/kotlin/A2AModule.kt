@@ -19,6 +19,7 @@ import io.github.a2a_4k.models.TaskResubscriptionRequest
 import io.github.a2a_4k.models.UnknownMethodRequest
 import io.github.a2a_4k.models.toJson
 import io.github.a2a_4k.models.toJsonRpcRequest
+import io.github.oshai.kotlinlogging.KotlinLogging
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.plugins.cors.routing.*
@@ -28,7 +29,6 @@ import io.ktor.server.routing.*
 import io.ktor.server.sse.*
 import io.ktor.sse.*
 import kotlinx.serialization.SerializationException
-import org.slf4j.LoggerFactory
 
 /**
  * Configures the application routing for the A2A server.
@@ -43,7 +43,8 @@ import org.slf4j.LoggerFactory
  * @receiver The Ktor Application instance to configure
  */
 
-private val log = LoggerFactory.getLogger(A2AServer::class.java)
+private val log = KotlinLogging.logger {}
+
 
 fun Application.a2aModule(endpoint: String, taskManager: TaskManager, agentCard: AgentCard, devMode: Boolean) {
     install(SSE)
@@ -62,7 +63,7 @@ fun Application.a2aModule(endpoint: String, taskManager: TaskManager, agentCard:
                 val streamingResult = when (val jsonRpcRequest = call.receiveText().toJsonRpcRequest()) {
                     is SendTaskStreamingRequest -> taskManager.onSendTaskSubscribe(jsonRpcRequest)
                     is TaskResubscriptionRequest -> taskManager.onResubscribeToTask(jsonRpcRequest)
-                    else -> throw IllegalArgumentException("Unexpected request type: ${jsonRpcRequest::class.java}")
+                    else -> throw IllegalArgumentException("Unexpected request type: ${jsonRpcRequest::class.simpleName}")
                 }
 
                 streamingResult.collect {
@@ -81,7 +82,7 @@ fun Application.a2aModule(endpoint: String, taskManager: TaskManager, agentCard:
                     is SetTaskPushNotificationRequest -> taskManager.onSetTaskPushNotification(jsonRpcRequest)
                     is GetTaskPushNotificationRequest -> taskManager.onGetTaskPushNotification(jsonRpcRequest)
                     is UnknownMethodRequest -> ErrorResponse(id = jsonRpcRequest.id, error = MethodNotFoundError())
-                    else -> throw IllegalArgumentException("Unexpected request type: ${jsonRpcRequest::class.java}")
+                    else -> throw IllegalArgumentException("Unexpected request type: ${jsonRpcRequest::class.simpleName}")
                 }
                 call.respondText(
                     result.toJson(),

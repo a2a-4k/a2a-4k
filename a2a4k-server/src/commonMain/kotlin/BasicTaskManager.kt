@@ -3,19 +3,21 @@
 // SPDX-License-Identifier: Apache-2.0
 package io.github.a2a_4k
 
+import co.touchlab.stately.collections.ConcurrentMutableMap
 import io.github.a2a_4k.models.*
 import io.github.a2a_4k.models.GetTaskResponse
 import io.github.a2a_4k.notifications.BasicNotificationPublisher
 import io.github.a2a_4k.notifications.NotificationPublisher
+import org.a2a4k.utils.Uuid
 import io.github.a2a_4k.storage.TaskStorage
 import io.github.a2a_4k.storage.loadTaskStorage
+import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
-import org.slf4j.LoggerFactory
-import java.util.*
-import java.util.Collections.synchronizedList
-import java.util.concurrent.ConcurrentHashMap
+
+private val log = KotlinLogging.logger {}
+
 
 /**
  * In-memory implementation of the TaskManager interface.
@@ -31,10 +33,10 @@ class BasicTaskManager(
     private val notificationPublisher: NotificationPublisher? = BasicNotificationPublisher(),
 ) : TaskManager {
 
-    private val log = LoggerFactory.getLogger(this::class.java)
+    //private val log = LoggerFactory.getLogger(this::class.java)
 
     /** Map of task IDs to lists of subscribers for server-sent events */
-    private val taskSseSubscribers: MutableMap<String, MutableList<Channel<Any>>> = ConcurrentHashMap()
+    private val taskSseSubscribers: MutableMap<String, MutableList<Channel<Any>>> = ConcurrentMutableMap()
 
     /**
      * {@inheritDoc}
@@ -273,7 +275,7 @@ class BasicTaskManager(
         return if (task == null) {
             val newTask = Task(
                 id = taskSendParams.id,
-                sessionId = taskSendParams.sessionId ?: UUID.randomUUID().toString(),
+                sessionId = taskSendParams.sessionId ?: Uuid.randomUUID().toString(),
                 status = TaskStatus(state = TaskState.SUBMITTED),
                 history = listOf(taskSendParams.message),
             )
@@ -339,7 +341,7 @@ class BasicTaskManager(
             throw IllegalArgumentException("Task not found for resubscription")
         }
         val sseEventQueue = Channel<Any>(Channel.UNLIMITED)
-        taskSseSubscribers.computeIfAbsent(taskId) { synchronizedList(mutableListOf()) }.add(sseEventQueue)
+        //taskSseSubscribers.computeIfAbsent(taskId) { synchronizedList(mutableListOf()) }.add(sseEventQueue)
         return sseEventQueue
     }
 
@@ -385,4 +387,8 @@ class BasicTaskManager(
             taskSseSubscribers[taskId]?.remove(sseEventQueue)
         }
     }
+}
+
+private fun MutableMap<String, MutableList<Channel<Any>>>.computeIfAbsent(taskId: String, function: Any) {
+    TODO("Not yet implemented")
 }

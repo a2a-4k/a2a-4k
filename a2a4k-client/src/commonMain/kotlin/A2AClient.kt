@@ -14,7 +14,7 @@ import io.ktor.utils.io.core.*
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
-import java.util.UUID
+import io.github.a2a_4k.org.a2a4k.utils.Uuid
 
 /**
  * A2AClient implements an Agent-to-Agent communication client based on the A2A protocol.
@@ -114,8 +114,8 @@ class A2AClient(
      */
     suspend fun sendTask(
         message: Message,
-        taskId: String = "task::${UUID.randomUUID()}",
-        sessionId: String = "session::${UUID.randomUUID()}",
+        taskId: String = "task::${Uuid.randomUUID()}",
+        sessionId: String = "session::${Uuid.randomUUID()}",
         historyLength: Int = 10,
         requestId: String = generateRequestId(),
     ): SendTaskResponse {
@@ -313,6 +313,6 @@ class A2AClient(
      * @return A unique string ID.
      */
     private fun generateRequestId(): String {
-        return "${UUID.randomUUID()}"
+        return "${Uuid.randomUUID()}"
     }
 }

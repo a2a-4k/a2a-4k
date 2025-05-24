@@ -4,24 +4,31 @@
 
 kotlin {
     jvm()
+    wasmJs().nodejs()
+
+
     sourceSets {
         val commonMain by getting {
             dependencies {
                 api(project(":a2a4k-models"))
                 implementation(libs.bundles.kotlinx)
+                implementation(libs.ktor.client.cio)
                 implementation(libs.ktor.server.sse)
                 implementation(libs.ktor.client.core)
                 implementation(libs.ktor.serialization.kotlinx.json)
                 implementation(libs.ktor.client.content.negotiation)
                 implementation(libs.slf4j.api)
+                implementation("io.github.oshai:kotlin-logging:7.0.7")
+                implementation("co.touchlab:stately-concurrent-collections:2.1.0")
+
             }
         }
 
         val jvmMain by getting {
             dependencies {
                 implementation(libs.ktor.server.core.jvm)
+                implementation(libs.ktor.client.cio)
                 implementation(libs.ktor.server.netty.jvm)
-                implementation(libs.ktor.client.cio.jvm)
             }
         }
 
