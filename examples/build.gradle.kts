@@ -19,7 +19,7 @@ kotlin {
         val jvmMain by getting {
             dependencies {
                 implementation("dev.langchain4j:langchain4j-open-ai:1.0.0-beta3")
-                implementation("org.eclipse.lmos:arc-agents:0.124.0")
+                implementation("org.eclipse.lmos:arc-agents:0.130.0")
                 implementation("org.eclipse.lmos:arc-azure-client:0.124.0")
                 implementation(libs.slf4j.jdk14)
             }
