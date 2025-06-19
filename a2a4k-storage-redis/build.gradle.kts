@@ -26,7 +26,7 @@ kotlin {
                 implementation("org.jetbrains.kotlin:kotlin-test:2.1.10")
                 implementation("io.mockk:mockk:1.13.10")
                 implementation("com.redis:testcontainers-redis:2.2.4")
-                implementation("org.testcontainers:junit-jupiter:1.20.4")
+                implementation("org.testcontainers:junit-jupiter:1.21.2")
             }
         }
     }
