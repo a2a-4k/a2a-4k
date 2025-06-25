@@ -17,8 +17,8 @@ kotlin {
 
         val jvmMain by getting {
             dependencies {
-                implementation("org.eclipse.lmos:arc-agents:0.124.0")
-                implementation("org.eclipse.lmos:arc-azure-client:0.124.0")
+                implementation("org.eclipse.lmos:arc-agents:0.137.0")
+                implementation("org.eclipse.lmos:arc-azure-client:0.137.0")
             }
         }
 
