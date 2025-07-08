@@ -25,6 +25,9 @@ import java.util.concurrent.ConcurrentHashMap
  * in the TaskManager interface, including task creation, retrieval, cancellation,
  * and subscription to task updates.
  */
+
+expect fun createSafeChannelMap(): MutableMap<String, MutableList<Channel<Any>>>
+
 class BasicTaskManager(
     private val taskHandler: TaskHandler,
     private val taskStorage: TaskStorage = loadTaskStorage(),
@@ -34,7 +37,7 @@ class BasicTaskManager(
     private val log = LoggerFactory.getLogger(this::class.java)
 
     /** Map of task IDs to lists of subscribers for server-sent events */
-    private val taskSseSubscribers: MutableMap<String, MutableList<Channel<Any>>> = ConcurrentHashMap()
+    private val taskSseSubscribers: MutableMap<String, MutableList<Channel<Any>>> = createSafeChannelMap()
 
     /**
      * {@inheritDoc}

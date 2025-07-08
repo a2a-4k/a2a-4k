@@ -6,7 +6,12 @@ package io.github.a2a_4k
 import io.github.a2a_4k.models.PushNotificationConfig
 import io.github.a2a_4k.models.Task
 import io.github.a2a_4k.storage.TaskStorage
-import java.util.concurrent.ConcurrentHashMap
+
+/**
+ * Creates a thread-safe map for storing tasks.
+ */
+expect fun createSafeTaskMap(): MutableMap<String, Task>
+expect fun createSafeNotificationConfigMap(): MutableMap<String, PushNotificationConfig>
 
 /**
  * In-memory implementation of the TaskStorage interface.
@@ -16,10 +21,10 @@ import java.util.concurrent.ConcurrentHashMap
 class InMemoryTaskStorage : TaskStorage {
 
     /** Map of task IDs to their corresponding Task objects */
-    private val tasks = ConcurrentHashMap<String, Task>()
+    private val tasks: MutableMap<String, Task> = createSafeTaskMap()
 
     /** Map of task IDs to their push notification configurations */
-    private val pushNotificationInfos: MutableMap<String, PushNotificationConfig> = ConcurrentHashMap()
+    private val pushNotificationInfos: MutableMap<String, PushNotificationConfig> = createSafeNotificationConfigMap()
 
     /**
      * Stores a task in the in-memory storage.
