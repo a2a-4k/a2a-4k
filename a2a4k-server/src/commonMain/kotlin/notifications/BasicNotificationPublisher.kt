@@ -8,14 +8,11 @@ import io.github.a2a_4k.models.Task
 import io.github.a2a_4k.models.a2aJson
 import io.github.a2a_4k.models.toJson
 import io.ktor.client.*
-import io.ktor.client.engine.cio.*
 import io.ktor.client.plugins.*
 import io.ktor.client.plugins.contentnegotiation.*
-import io.ktor.client.plugins.sse.*
 import io.ktor.client.request.*
 import io.ktor.http.*
 import io.ktor.serialization.kotlinx.json.*
-import kotlinx.serialization.json.Json
 import org.slf4j.LoggerFactory
 
 /**

@@ -3,8 +3,35 @@
 // SPDX-License-Identifier: Apache-2.0
 package io.github.a2a_4k
 
-import io.github.a2a_4k.models.*
+import io.github.a2a_4k.models.CancelTaskRequest
+import io.github.a2a_4k.models.CancelTaskResponse
+import io.github.a2a_4k.models.GetTaskPushNotificationRequest
+import io.github.a2a_4k.models.GetTaskPushNotificationResponse
+import io.github.a2a_4k.models.GetTaskRequest
 import io.github.a2a_4k.models.GetTaskResponse
+import io.github.a2a_4k.models.InternalError
+import io.github.a2a_4k.models.JsonRpcError
+import io.github.a2a_4k.models.PushNotificationConfig
+import io.github.a2a_4k.models.SendTaskRequest
+import io.github.a2a_4k.models.SendTaskResponse
+import io.github.a2a_4k.models.SendTaskStreamingRequest
+import io.github.a2a_4k.models.SendTaskStreamingResponse
+import io.github.a2a_4k.models.SetTaskPushNotificationRequest
+import io.github.a2a_4k.models.SetTaskPushNotificationResponse
+import io.github.a2a_4k.models.StringOrInt
+import io.github.a2a_4k.models.Task
+import io.github.a2a_4k.models.TaskArtifactUpdateEvent
+import io.github.a2a_4k.models.TaskIdParams
+import io.github.a2a_4k.models.TaskNotCancelableError
+import io.github.a2a_4k.models.TaskNotFoundError
+import io.github.a2a_4k.models.TaskPushNotificationConfig
+import io.github.a2a_4k.models.TaskQueryParams
+import io.github.a2a_4k.models.TaskResubscriptionRequest
+import io.github.a2a_4k.models.TaskSendParams
+import io.github.a2a_4k.models.TaskState
+import io.github.a2a_4k.models.TaskStatus
+import io.github.a2a_4k.models.TaskStatusUpdateEvent
+import io.github.a2a_4k.models.TaskStreamingResult
 import io.github.a2a_4k.notifications.BasicNotificationPublisher
 import io.github.a2a_4k.notifications.NotificationPublisher
 import io.github.a2a_4k.storage.TaskStorage
@@ -13,9 +40,6 @@ import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import org.slf4j.LoggerFactory
-import java.util.*
-import java.util.Collections.synchronizedList
-import java.util.concurrent.ConcurrentHashMap
 
 /**
  * In-memory implementation of the TaskManager interface.
@@ -27,6 +51,7 @@ import java.util.concurrent.ConcurrentHashMap
  */
 
 expect fun createSafeChannelMap(): MutableMap<String, MutableList<Channel<Any>>>
+expect fun createSafeChannelList(): MutableList<Channel<Any>>
 
 class BasicTaskManager(
     private val taskHandler: TaskHandler,
@@ -276,7 +301,7 @@ class BasicTaskManager(
         return if (task == null) {
             val newTask = Task(
                 id = taskSendParams.id,
-                sessionId = taskSendParams.sessionId ?: UUID.randomUUID().toString(),
+                sessionId = taskSendParams.sessionId ?: randomUUID(),
                 status = TaskStatus(state = TaskState.SUBMITTED),
                 history = listOf(taskSendParams.message),
             )
@@ -342,7 +367,7 @@ class BasicTaskManager(
             throw IllegalArgumentException("Task not found for resubscription")
         }
         val sseEventQueue = Channel<Any>(Channel.UNLIMITED)
-        taskSseSubscribers.computeIfAbsent(taskId) { synchronizedList(mutableListOf()) }.add(sseEventQueue)
+        taskSseSubscribers.computeIfAbsent(taskId) { createSafeChannelList() }.add(sseEventQueue)
         return sseEventQueue
     }
 
