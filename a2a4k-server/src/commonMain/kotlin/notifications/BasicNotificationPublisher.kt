@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: Apache-2.0
 package io.github.a2a_4k.notifications
 
+import io.github.a2a_4k.createLogger
 import io.github.a2a_4k.models.PushNotificationConfig
 import io.github.a2a_4k.models.Task
 import io.github.a2a_4k.models.a2aJson
@@ -13,7 +14,6 @@ import io.ktor.client.plugins.contentnegotiation.*
 import io.ktor.client.request.*
 import io.ktor.http.*
 import io.ktor.serialization.kotlinx.json.*
-import org.slf4j.LoggerFactory
 
 /**
  * BasicNotificationPublisher implements the NotificationPublisher interface
@@ -22,7 +22,7 @@ import org.slf4j.LoggerFactory
 class BasicNotificationPublisher(httpClient: HttpClient? = null) : NotificationPublisher {
 
     /** Logger for this class */
-    private val log = LoggerFactory.getLogger(this::class.java)
+    private val log = createLogger(this::class)
 
     /**
      * The HTTP client used for making requests to the server.

@@ -7,7 +7,6 @@ import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
-import kotlin.test.assertTrue
 
 class AgentCardTest {
 
@@ -17,14 +16,14 @@ class AgentCardTest {
         val capabilities = Capabilities(
             streaming = true,
             pushNotifications = false,
-            stateTransitionHistory = true
+            stateTransitionHistory = true,
         )
-        
+
         val skill = Skill(
             id = "test-skill",
-            name = "Test Skill"
+            name = "Test Skill",
         )
-        
+
         // When
         val agentCard = AgentCard(
             name = "Test Agent",
@@ -34,9 +33,9 @@ class AgentCardTest {
             capabilities = capabilities,
             defaultInputModes = listOf("text"),
             defaultOutputModes = listOf("text"),
-            skills = listOf(skill)
+            skills = listOf(skill),
         )
-        
+
         // Then
         assertEquals("Test Agent", agentCard.name)
         assertEquals("Test Agent Description", agentCard.description)
@@ -50,25 +49,25 @@ class AgentCardTest {
         assertNull(agentCard.documentationUrl)
         assertNull(agentCard.authentication)
     }
-    
+
     @Test
     fun `test AgentCard creation with all fields`() {
         // Given
         val capabilities = Capabilities(
             streaming = true,
             pushNotifications = true,
-            stateTransitionHistory = true
+            stateTransitionHistory = true,
         )
-        
+
         val authentication = Authentication(
-            schemes = listOf("oauth2", "api_key")
+            schemes = listOf("oauth2", "api_key"),
         )
-        
+
         val provider = Provider(
             organization = "Test Organization",
-            url = "https://test-org.com"
+            url = "https://test-org.com",
         )
-        
+
         val skill = Skill(
             id = "test-skill",
             name = "Test Skill",
@@ -76,9 +75,9 @@ class AgentCardTest {
             tags = listOf("test", "example"),
             examples = listOf("Example 1", "Example 2"),
             inputModes = listOf("text", "file"),
-            outputModes = listOf("text", "image")
+            outputModes = listOf("text", "image"),
         )
-        
+
         // When
         val agentCard = AgentCard(
             name = "Test Agent",
@@ -91,9 +90,9 @@ class AgentCardTest {
             skills = listOf(skill),
             provider = provider,
             documentationUrl = "https://docs.example.com",
-            authentication = authentication
+            authentication = authentication,
         )
-        
+
         // Then
         assertEquals("Test Agent", agentCard.name)
         assertEquals("Test Agent Description", agentCard.description)
@@ -110,13 +109,13 @@ class AgentCardTest {
         assertNotNull(agentCard.authentication)
         assertEquals(listOf("oauth2", "api_key"), agentCard.authentication?.schemes)
     }
-    
+
     @Test
     fun `test AgentCard data class functionality`() {
         // Given
         val capabilities = Capabilities(streaming = true)
         val skill = Skill(id = "test-skill", name = "Test Skill")
-        
+
         // When
         val agentCard1 = AgentCard(
             name = "Test Agent",
@@ -126,9 +125,9 @@ class AgentCardTest {
             capabilities = capabilities,
             defaultInputModes = listOf("text"),
             defaultOutputModes = listOf("text"),
-            skills = listOf(skill)
+            skills = listOf(skill),
         )
-        
+
         val agentCard2 = AgentCard(
             name = "Test Agent",
             description = "Test Agent Description",
@@ -137,16 +136,16 @@ class AgentCardTest {
             capabilities = capabilities,
             defaultInputModes = listOf("text"),
             defaultOutputModes = listOf("text"),
-            skills = listOf(skill)
+            skills = listOf(skill),
         )
-        
+
         val agentCard3 = agentCard1.copy(name = "Different Agent")
-        
+
         // Then
         // Test equals and hashCode
         assertEquals(agentCard1, agentCard2)
         assertEquals(agentCard1.hashCode(), agentCard2.hashCode())
-        
+
         // Test copy
         assertEquals("Different Agent", agentCard3.name)
         assertEquals(agentCard1.description, agentCard3.description)

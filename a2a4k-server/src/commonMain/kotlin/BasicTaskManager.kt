@@ -39,7 +39,6 @@ import io.github.a2a_4k.storage.loadTaskStorage
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
-import org.slf4j.LoggerFactory
 
 /**
  * In-memory implementation of the TaskManager interface.
@@ -59,7 +58,7 @@ class BasicTaskManager(
     private val notificationPublisher: NotificationPublisher? = BasicNotificationPublisher(),
 ) : TaskManager {
 
-    private val log = LoggerFactory.getLogger(this::class.java)
+    private val log = createLogger(this::class)
 
     /** Map of task IDs to lists of subscribers for server-sent events */
     private val taskSseSubscribers: MutableMap<String, MutableList<Channel<Any>>> = createSafeChannelMap()
