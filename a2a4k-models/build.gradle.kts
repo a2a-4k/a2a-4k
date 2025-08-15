@@ -16,7 +16,7 @@ kotlin {
             dependencies {
                 implementation("org.junit.jupiter:junit-jupiter-api:5.10.2")
                 implementation("org.junit.jupiter:junit-jupiter-engine:5.10.2")
-                implementation("org.jetbrains.kotlin:kotlin-test:2.1.10")
+                implementation("org.jetbrains.kotlin:kotlin-test:2.2.10")
             }
         }
     }
