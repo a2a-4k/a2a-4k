@@ -14,7 +14,7 @@ version = project.findProperty("version") as String
 
 plugins {
     kotlin("multiplatform") version "2.1.10" apply false
-    kotlin("plugin.serialization") version "2.1.10" apply false
+    kotlin("plugin.serialization") version "2.2.10" apply false
     id("org.jetbrains.dokka") version "2.0.0"
     id("org.cyclonedx.bom") version "2.0.0"
     id("org.jlleitschuh.gradle.ktlint") version "12.2.0"
